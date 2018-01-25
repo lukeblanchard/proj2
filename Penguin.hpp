@@ -13,8 +13,7 @@ class Penguin : public Animal
 private: 
     int food_cost;
 public:
-    Penguin(); 
-    Penguin(int); 
+    Penguin(int age=1); 
 }; 
 
 #endif 

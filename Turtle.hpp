@@ -13,8 +13,7 @@ class Turtle : public Animal
 private:
     int food_cost; 
 public: 
-    Turtle();
-    Turtle(int);
+    Turtle(int age=1);
 }; 
 
 #endif

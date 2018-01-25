@@ -1,15 +1,9 @@
-#include "Tiger.hpp"
-#include "Penguin.hpp"
-#include "Turtle.hpp"
+#include "Game.hpp"
 #include <iostream> 
 
 int main()
 {
-    Tiger tiger(3); 
-    Penguin pastor(5); 
-    Turtle turtle(8); 
-    std::cout << tiger.getAge() << std::endl;
-    tiger.addAge(); 
-    std::cout << tiger.getAge() << std::endl;
+    Game game(8, 7, 8); 
+    game.sickness(); 
     return 0;
 }

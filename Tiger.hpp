@@ -13,8 +13,7 @@ class Tiger : public Animal
 private: 
     double food_cost; 
 public: 
-    Tiger(); 
-    Tiger(int); 
+    Tiger(int age=1); 
 }; 
 
 #endif

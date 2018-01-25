@@ -23,3 +23,8 @@ void Animal::addAge()
 {
     this->age += 1; 
 }
+
+int Animal::getCost()
+{
+    return this->cost;
+}

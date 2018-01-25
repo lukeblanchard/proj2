@@ -10,6 +10,8 @@
 #include "Penguin.hpp"
 #include "Turtle.hpp"
 
+    enum Species {TIGER, PENGUIN, TURTLE};
+
 class Zoo 
 {
 private:
@@ -24,6 +26,11 @@ private:
     int turtleCapacity;
 public: 
     Zoo(int, int, int); 
+    void buyTiger(); 
+    void buyPenguin(); 
+    void buyTurtle(); 
+    void animalDies(int); 
+    ~Zoo(); 
 }; 
 
 #endif
