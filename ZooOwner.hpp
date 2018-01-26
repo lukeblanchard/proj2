@@ -13,11 +13,14 @@
 class ZooOwner 
 {
 private: 
-   int bank; 
+   double money; 
    Zoo *zoo; 
 public: 
     ZooOwner(int, int, int);
-    void buyAnimal(Species); 
+    bool buyAnimal(int, int); 
+    void addMoney(double); 
+    void subtractMoney(double); 
+    double getMoney();
     Zoo* getZoo(); 
     ~ZooOwner(); 
 }; 

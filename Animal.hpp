@@ -12,14 +12,17 @@ class Animal
 protected: 
     int age; 
     int number_of_babies;
-    double cost; 
     double base_food_cost; 
     double payoff;
+    double cost; 
 public: 
     Animal(int, int, double, double); 
     int getAge(); 
+    double getPayoff(); 
+    double getCost(); 
     void addAge(); 
-    int getCost(); 
+    virtual double getFoodCost(); 
+    virtual ~Animal(); 
 };
 
 #endif

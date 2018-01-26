@@ -1,9 +1,11 @@
 #include "Game.hpp"
 #include <iostream> 
+#include <stdlib.h>
+#include <time.h>
 
 int main()
 {
-    Game game(8, 7, 8); 
-    game.sickness(); 
+    srand(time(NULL));
+    Game game; 
     return 0;
 }

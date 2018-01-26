@@ -7,18 +7,23 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 #include "ZooOwner.hpp"
+#include "Menu.hpp"
 
 class Game 
 {
 private: 
     ZooOwner *tycoon;
+    Zoo *zoo; 
+    Menu *menu;
 public: 
-    Game(int, int, int);  
+    Game();  
     void day(); 
+    void playGame(); 
+    void randomEvent(); 
     void sickness(); 
     void attendance_boom(); 
-    void baby_born(); 
-    void print(); 
+    bool baby_born(); 
+    bool checkMoney(); 
     ~Game(); 
 }; 
 

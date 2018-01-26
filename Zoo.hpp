@@ -26,10 +26,18 @@ private:
     int turtleCapacity;
 public: 
     Zoo(int, int, int); 
-    void buyTiger(); 
-    void buyPenguin(); 
-    void buyTurtle(); 
-    void animalDies(int); 
+    void addTiger(int age=0); 
+    int getTigerCount(); 
+    void addPenguin(int age=0); 
+    int getPenguinCount(); 
+    void addTurtle(int age=0); 
+    int getTurtleCount(); 
+    bool animalBirth(int); 
+    void animalsAge(); 
+    void animalDeath(int); 
+    int getFoodCost(); 
+    int getProfit(); 
+    double getAnimalValue(); 
     ~Zoo(); 
 }; 
 

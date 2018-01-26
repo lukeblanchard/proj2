@@ -14,6 +14,7 @@ private:
     int food_cost; 
 public: 
     Turtle(int age=1);
+    double getFoodCost(); 
 }; 
 
 #endif

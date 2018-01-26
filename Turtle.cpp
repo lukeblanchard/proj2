@@ -8,3 +8,8 @@ Turtle::Turtle(int age) : Animal(age, 10, 100, 0.05)
 {
     this->food_cost = this->Animal::base_food_cost * 0.5;
 }
+
+double Turtle::getFoodCost() 
+{
+    return food_cost;
+}

@@ -7,42 +7,61 @@
 
 ZooOwner::ZooOwner(int tigers, int penguins, int turtles)
 {
-    zoo = new Zoo(tigers, penguins, turtles);
-    bank = 100000; 
+    zoo = new Zoo(tigers, penguins, turtles); 
+    money = 23000 - zoo->getAnimalValue();  
 }
 
-void ZooOwner::buyAnimal(Species s)
+bool ZooOwner::buyAnimal(int sp, int age)
 {
-    switch(s)
+    bool success = false; 
+    switch(sp)
     {
         case(TIGER):
-            if(bank < 10000)
-                std::cout << "Insufficient funds to purchase a tiger." << std::endl;
+            if(money < 10000)
+                std::cout << "**Insufficient funds to purchase a tiger." << std::endl;
             else
             {
-                zoo->buyTiger(); 
-                bank -= 10000;
+                zoo->addTiger(age); 
+                money -= 10000;
+                success = true; 
             }    
             break; 
         case(PENGUIN): 
-            if(bank < 1000)                                                                      
-                std::cout << "Insufficient funds to purchase a penguin." << std::endl;
+            if(money < 1000)                                                                      
+                std::cout << "**Insufficient funds to purchase a penguin." << std::endl;
             else
             {
-                zoo->buyPenguin();  
-                bank -= 1000;
+                zoo->addPenguin(age);  
+                money -= 1000;
+                success = true; 
             }                                                                            
             break; 
         case(TURTLE):
-            if(bank < 100)
-                std::cout << "Insufficient funds to purchase a turtle." << std::endl;
+            if(money < 100)
+                std::cout << "**Insufficient funds to purchase a turtle." << std::endl;
             else
             {
-            zoo->buyTurtle();
-            bank -= 100;
+                zoo->addTurtle(age);
+                money -= 100;
+                success = true; 
             }
     }
-   
+    return success;
+}
+
+void ZooOwner::addMoney(double profits)
+{
+    money += profits;
+}
+
+void ZooOwner::subtractMoney(double costs)
+{
+    money -= costs;
+}
+
+double ZooOwner::getMoney()
+{
+    return money;
 }
 
 Zoo* ZooOwner::getZoo()

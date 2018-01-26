@@ -14,6 +14,7 @@ private:
     double food_cost; 
 public: 
     Tiger(int age=1); 
+    double getFoodCost(); 
 }; 
 
 #endif
