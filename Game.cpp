@@ -6,6 +6,7 @@
 #include "Game.hpp"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 Game::Game()
@@ -13,6 +14,7 @@ Game::Game()
     int tigers; 
     int penguins; 
     int turtles; 
+    bool createNewAnimal;
 
     menu = new Menu;
 
@@ -33,6 +35,51 @@ Game::Game()
     tycoon = new ZooOwner(tigers, penguins, turtles);    
     zoo = tycoon->getZoo(); 
 
+    menuBoolIO newSpecies; 
+    newSpecies.push_back(std::make_pair("\nDo you want to add a new animal to the zoo? (y/n) ", &createNewAnimal));
+    
+    menu->load(newSpecies); 
+
+    if(createNewAnimal)
+    {
+        int babies; 
+        int newAnimalsCount;
+        double food_cost; 
+        double cost; 
+        double profit; 
+        std::string name; 
+
+        menuIntIO babyNumber; 
+        babyNumber.push_back(std::make_pair("How many offspring can an adult birth? Please enter a number from 1 to 5: ", &babies)); 
+
+        menuDoubleIO costPrompts; 
+        costPrompts.push_back(std::make_pair("How much does it cost to purchase this animal (in USD)? ", &cost)); 
+        costPrompts.push_back(std::make_pair("How much does it cost to feed per day (in USD)? ", &food_cost)); 
+
+        menuDoubleIO profitPrompt;
+        profitPrompt.push_back(std::make_pair("How much profit does the animal add to the zoo each day?\n(Profit is calculated as a percentage of the animal's market value) Please enter a number from 0.01 to 0.2: ", &profit)); 
+
+        menuStringIO animalName; 
+        animalName.push_back(std::make_pair("What do you call this animal? ", &name)); 
+
+        menu->load(babyNumber, 1, 5); 
+        menu->load(costPrompts); 
+        std::cout << "Game Constructor, double newAnimalCost: " << cost << std::endl;
+        menu->load(profitPrompt, 0.01, 0.2); 
+        menu->load(animalName); 
+
+        std::cout << "\n" << name << " cost: " << "$" << cost << "\n"; 
+
+        menuIntIO buyNewAnimal;
+        buyNewAnimal.push_back(std::make_pair("\nHow many do you want to buy?\nPlease enter 1 or 2: ", &newAnimalsCount)); 
+
+        menu->load(buyNewAnimal); 
+
+        //Need zoo to set Data, need data to set zoo
+        tycoon->setNewAnimalData(babies, food_cost, cost, profit, name); 
+        zoo->initializeNewAnimals(newAnimalsCount); 
+        tycoon->subtractMoney(newAnimalsCount * cost); 
+    }
     playGame(); 
 }
 
@@ -61,7 +108,13 @@ void Game::playGame()
 
 void Game::sickness()
 {
-    int victim = rand() % 3; 
+    int numberOfSpecies; 
+    int victim;
+    if(zoo->includesNewAnimal())
+        numberOfSpecies = 4; 
+    else
+        numberOfSpecies = 3; 
+    victim = rand() % numberOfSpecies; 
     zoo->animalDeath(victim);
 }
 
@@ -75,22 +128,54 @@ bool Game::baby_born()
 {
     int a, b, c; 
     bool success; 
-    a = rand() % 3; 
-    b = rand() % 3; 
-    c = rand() % 3; 
-    while(a == b || a == c || b == c)
+
+    if(zoo->includesNewAnimal())
+    {
+        int d; 
+        a = rand() % 4; 
+        b = rand() % 4; 
+        c = rand() % 4; 
+        d = rand() % 4;
+        while(a == b || a == c || a == d || b == c || b == d || c == d)
+        {
+            a = rand() % 4; 
+            b = rand() % 4; 
+            c = rand() % 4; 
+            d = rand() % 4; 
+        }
+        success = zoo->animalBirth(a); 
+        if(!success)
+        {
+            success = zoo->animalBirth(b); 
+            if(!success)
+            {
+                success = zoo->animalBirth(c); 
+                if(!success)
+                {
+                    success = zoo->animalBirth(d); 
+                }
+            }
+        }
+    }
+    else
     {
         a = rand() % 3; 
         b = rand() % 3; 
         c = rand() % 3; 
-    }
-    success = zoo->animalBirth(a); 
-    if(!success)
-    {
-        success = zoo->animalBirth(b); 
+        while(a == b || a == c || b == c)
+        {
+            a = rand() % 3; 
+            b = rand() % 3; 
+            c = rand() % 3; 
+        }
+        success = zoo->animalBirth(a); 
         if(!success)
         {
-            success = zoo->animalBirth(c); 
+            success = zoo->animalBirth(b); 
+            if(!success)
+            {
+                success = zoo->animalBirth(c); 
+            }
         }
     }
     return success;
@@ -158,6 +243,8 @@ void Game::day()
     std::cout << "Tigers: " << zoo->getTigerCount() << std::endl;
     std::cout << "Penguins: " << zoo->getPenguinCount() << std::endl; 
     std::cout << "Turtles: " << zoo->getTurtleCount() << std::endl; 
+    if(zoo->includesNewAnimal())
+        std::cout << zoo->getNewAnimalName() << ": " << zoo->getNewAnimalCount() << std::endl; 
     std::cout << std::endl;
 
     moneyEndDay = tycoon->getMoney(); 
@@ -176,24 +263,59 @@ void Game::day()
         do
         {
             menuIntIO animalChoices; 
-            animalChoices.push_back(std::make_pair("1.Tiger (cost: $10,000)\n2.Penguin (cost: $1,000)\n3.Turtle (cost: $100))\n4.Do not buy an animal\nEnter choice: ", &choice)); 
-            menu->load(animalChoices, 1, 4); 
-            if(choice == 4)
+            if(zoo->includesNewAnimal())
             {
-                validChoice = true; 
+                std::ostringstream costString; 
+                costString << zoo->getNewAnimalCost(); 
+                std::string prompt = "1.Tiger (cost: $10,000)\n2.Penguin (cost: $1,000)\n3.Turtle (cost: $100)\n4."; 
+                prompt += zoo->getNewAnimalName(); 
+                prompt += " (cost: $"; 
+                prompt += costString.str();  
+                prompt += ")"; 
+                prompt += "\n5.Do not buy an animal\nEnter choice: "; 
+                animalChoices.push_back(std::make_pair(prompt, &choice)); 
+                menu->load(animalChoices, 1, 5); 
+                if(choice == 5)
+                {
+                    validChoice = true; 
+                }
+                else
+                {
+                    validChoice = tycoon->buyAnimal(choice - 1, 3); 
+                }
             }
             else
             {
-                validChoice = tycoon->buyAnimal(choice - 1, 3);
+                animalChoices.push_back(std::make_pair("1.Tiger (cost: $10,000)\n2.Penguin (cost: $1,000)\n3.Turtle (cost: $100))\n4.Do not buy an animal\nEnter choice: ", &choice)); 
+                menu->load(animalChoices, 1, 4); 
+                if(choice == 4)
+                {
+                    validChoice = true; 
+                }
+                else
+                {
+                    validChoice = tycoon->buyAnimal(choice - 1, 3);
+                }
             }
         } while(!validChoice);
-        if (choice != 4)
+        if (choice != 4 && !zoo->includesNewAnimal())
         {
             std::cout << std::endl; 
             std::cout << "Animal Counts" << std::endl;
             std::cout << "Tigers: " << zoo->getTigerCount() << std::endl; 
             std::cout << "Penguins: " << zoo->getPenguinCount() << std::endl;  
             std::cout << "Turtles: " << zoo->getTurtleCount() << std::endl; 
+            std::cout << std::endl;
+            std::cout << "Current funds: " << tycoon->getMoney() << std::endl; 
+        }
+        else if (choice != 5 && zoo->includesNewAnimal())
+        {
+            std::cout << std::endl; 
+            std::cout << "Animal Counts" << std::endl;
+            std::cout << "Tigers: " << zoo->getTigerCount() << std::endl; 
+            std::cout << "Penguins: " << zoo->getPenguinCount() << std::endl;  
+            std::cout << "Turtles: " << zoo->getTurtleCount() << std::endl; 
+            std::cout << zoo->getNewAnimalName() << ": " << zoo->getNewAnimalCount() << std::endl;
             std::cout << std::endl;
             std::cout << "Current funds: " << tycoon->getMoney() << std::endl; 
         }

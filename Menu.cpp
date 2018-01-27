@@ -50,6 +50,41 @@ void Menu::getAllResponses(menuIntIO menuInt, int low, int high, int offset)
 }
 
 /****************************************************************************
+ ** Input vector of (string, double*) pairs
+ ****************************************************************************/
+void Menu::getAllResponses(menuDoubleIO menuDub)
+{
+    for(menuDoubleIO::iterator itr = doubleResponses.begin(); itr != doubleResponses.end(); ++itr)    
+    {
+        std::cout << itr->first; 
+        *(itr->second) = getDoubleResponse(); 
+    }
+}
+
+/****************************************************************************
+ ** Input vector of (string, int*) pairs, lower bound
+ ****************************************************************************/
+void Menu::getAllResponses(menuDoubleIO menuDub, double low)
+{
+    for(menuDoubleIO::iterator itr = doubleResponses.begin(); itr != doubleResponses.end(); ++itr)    
+    {
+        std::cout << itr->first; 
+        *(itr->second) = getDoubleResponse(low); 
+    }
+}
+
+/****************************************************************************
+ ** Input vector of (string, int*) pairs, low-high range, and optional offset
+ ****************************************************************************/
+void Menu::getAllResponses(menuDoubleIO menuDub, double low, double high, double offset)
+{
+    for(menuDoubleIO::iterator itr = doubleResponses.begin(); itr != doubleResponses.end(); ++itr)    
+    {
+        std::cout << itr->first; 
+        *(itr->second) = getDoubleResponse(low, high, offset); 
+    }
+}
+/****************************************************************************
  ** Input vector of (string, string*) pairs
  ****************************************************************************/
 void Menu::getAllResponses(menuStringIO menuString)
@@ -98,6 +133,44 @@ bool Menu::checkInt(std::string s)
     return invalid;
 }
 
+/****************************************************************************
+ ** Input string, check that user input is a valid double
+ ****************************************************************************/
+bool Menu::checkDouble(std::string s)
+{
+    bool invalid = false; 
+    bool decimalPoint = false; 
+
+    for(std::string::iterator it = s.begin(); it != s.end(); ++it)
+    {
+        if((int) *it > 57 || (int) *it < 48) //use ASCII codes to ensure string consists of numerals 
+        {
+            if(it == s.begin() && (int) *it == 45) //first character may be negative sign (-)
+            {
+                continue; 
+            }
+            else if((int) *it == 46) //decimal point allowed, but only one
+            {
+                if(!decimalPoint)
+                {
+                    decimalPoint = true; 
+                    continue;
+                }
+                else
+                {
+                    invalid = true; 
+                    break;
+                }
+            }
+            else
+            {
+                invalid = true; 
+                break;
+            }
+        }
+    }
+    return invalid;
+}
 
 /****************************************************************************
  ** Input low-high range, and offset, which can be used to correctly index
@@ -188,10 +261,100 @@ int Menu::getIntegerResponse()
 
     std::istringstream istr(strResponse);
     istr >> response;
-    std::cout << response << std::endl;
     return response;
 }
 
+/****************************************************************************
+ ** Input low-high range, and offset, which can be used to correctly index
+ ** row and col input
+ ****************************************************************************/
+double Menu::getDoubleResponse(double low, double high, double offset)
+{
+    double response; 
+    std::string strResponse;
+    bool invalid;
+
+    std::getline(std::cin, strResponse);
+    invalid = checkDouble(strResponse); 
+
+    if(!invalid)
+    {
+        std::istringstream istr(strResponse);
+        istr >> response;   
+        invalid = response < low || response > high; //input should be in this range
+    }
+
+    while(invalid) 
+    {
+        std::cout << "Please enter a valid choice from " << low << "-" << high << ": "; 
+        std::getline(std::cin, strResponse);
+        invalid = checkDouble(strResponse); 
+        if(!invalid)
+        {
+            std::istringstream istr(strResponse);
+            istr >> response;   
+            invalid = response < low || response > high;
+        }
+    }
+    return response + offset;
+}
+
+/****************************************************************************
+ ** Input lower bound
+ ****************************************************************************/
+double Menu::getDoubleResponse(double low)
+{
+    double response; 
+    std::string strResponse;
+    bool invalid;
+
+    std::getline(std::cin, strResponse);
+    invalid = checkInt(strResponse); 
+
+    if(!invalid)
+    {
+        std::istringstream istr(strResponse);
+        istr >> response;   
+        invalid = response < low; //input should be in this range
+    }
+
+    while(invalid) 
+    {
+        std::cout << "Please enter a valid choice greater than or equal to " << low << ": "; 
+        std::getline(std::cin, strResponse);
+        invalid = checkDouble(strResponse); 
+        if(!invalid)
+        {
+            std::istringstream istr(strResponse);
+            istr >> response;   
+            invalid = response < low;
+        }
+    }
+    return response; 
+}
+/****************************************************************************
+ ** Get integer, no range check or offset
+ ****************************************************************************/
+double Menu::getDoubleResponse()
+{
+    double response; 
+    std::string strResponse;
+    bool invalid;
+
+    std::getline(std::cin, strResponse);
+    invalid = checkDouble(strResponse); 
+
+    while(invalid) 
+    {
+        std::cout << "Please enter a valid number: ";  
+        std::getline(std::cin, strResponse);
+        invalid = checkDouble(strResponse); 
+    }
+
+    std::istringstream istr(strResponse);
+    istr >> response;
+    return response;
+}
 
 /****************************************************************************
  ** Get yes/no string input
@@ -260,6 +423,32 @@ void Menu::load(menuIntIO newPAndR, int low, int high, int offset)
     getAllResponses(intResponses, low, high, offset);  
 }
 
+/****************************************************************************
+ ** Input vector of (string, double*) pairs
+ ****************************************************************************/
+void Menu::load(menuDoubleIO newPAndR)
+{
+    doubleResponses = newPAndR;
+    getAllResponses(doubleResponses);  
+}
+
+/****************************************************************************
+ ** Input vector of (string, double*) pairs, lower bound
+ ****************************************************************************/
+void Menu::load(menuDoubleIO newPAndR, double low)
+{
+    doubleResponses = newPAndR;
+    getAllResponses(doubleResponses, low);  
+}
+
+/****************************************************************************
+ ** Input vector of (string, double*) pairs, low-high range, optional offset
+ ****************************************************************************/
+void Menu::load(menuDoubleIO newPAndR, double low, double high, double offset)
+{
+    doubleResponses = newPAndR;
+    getAllResponses(doubleResponses, low, high, offset);  
+}
 /****************************************************************************
  ** Input vector of (string, string*) pairs
  ****************************************************************************/

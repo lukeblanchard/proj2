@@ -17,10 +17,12 @@ private:
    Zoo *zoo; 
 public: 
     ZooOwner(int, int, int);
+    ZooOwner(int, int, int, int);
     bool buyAnimal(int, int); 
     void addMoney(double); 
     void subtractMoney(double); 
     double getMoney();
+    void setNewAnimalData(int, double, double, double, std::string); 
     Zoo* getZoo(); 
     ~ZooOwner(); 
 }; 

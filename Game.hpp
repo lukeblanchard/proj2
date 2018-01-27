@@ -8,6 +8,7 @@
 #define GAME_HPP
 #include "ZooOwner.hpp"
 #include "Menu.hpp"
+#include "NewAnimal.hpp"
 
 class Game 
 {

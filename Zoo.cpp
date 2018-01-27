@@ -15,10 +15,12 @@ Zoo::Zoo(int tigerCount, int penguinCount, int turtleCount)
     this->tigerCount = tigerCount;  
     this->penguinCount = penguinCount; 
     this->turtleCount = turtleCount; 
+    this->hasNewAnimal = false;
 
     tigers = new Tiger*[tigerCapacity]; 
     penguins = new Penguin*[penguinCapacity]; 
     turtles = new Turtle*[turtleCapacity]; 
+    newAnimals = nullptr; 
 
     for(int i = 0; i < tigerCount; i++)
     {
@@ -33,6 +35,21 @@ Zoo::Zoo(int tigerCount, int penguinCount, int turtleCount)
     for(int i = 0; i < turtleCount; i++)
     {
         turtles[i] = new Turtle; 
+    }
+}
+
+void Zoo::initializeNewAnimals(int count)
+{
+    this->newAnimalCapacity = 10;
+    this->hasNewAnimal = true;
+    this->newAnimalCount = count;
+    std::cout << "initializeNewAnimals before" << std::endl;
+    newAnimals = new NewAnimal*[newAnimalCapacity]; 
+    std::cout << "initializeNewAnimals after" << std::endl;
+    for(int i = 0; i < newAnimalCount; i++)
+    {
+        std::cout << "initializeNewAnimals i:" << i << std::endl;
+        newAnimals[i] = new NewAnimal(1, newAnimalBabies, newAnimalFoodCost, newAnimalCost, newAnimalProfit); 
     }
 }
 
@@ -81,6 +98,21 @@ void Zoo::addTurtle(int age)
     turtleCount += 1; 
 }
 
+void Zoo::addNewAnimal(int age)
+{
+    if(newAnimalCount + 1 > newAnimalCapacity)
+    {
+        newAnimalCapacity *= 2; 
+        NewAnimal **expandedNewAnimals = new NewAnimal*[newAnimalCapacity]; 
+        for(int i = 0; i < newAnimalCount; i++)
+            expandedNewAnimals[i] = newAnimals[i]; 
+        delete [] newAnimals; 
+        newAnimals = expandedNewAnimals;
+    }
+    newAnimals[newAnimalCount] = new NewAnimal(age, newAnimalBabies, newAnimalFoodCost, newAnimalCost, newAnimalProfit);     
+    turtleCount += 1; 
+}
+
 void Zoo::animalDeath(int species)
 {
     switch(species)
@@ -99,6 +131,11 @@ void Zoo::animalDeath(int species)
             turtleCount -= 1; 
             delete turtles[turtleCount]; 
             std::cout << "A turtle dies." << std::endl;
+            break;
+        case(NEWANIMAL):
+            newAnimalCount -= 1; 
+            delete newAnimals[newAnimalCount]; 
+            std::cout << "A " << newAnimalName << " dies." << std::endl;
             break;
     }
 }
@@ -159,9 +196,20 @@ bool Zoo::animalBirth(int species)
                 }
             }
             break; 
+        case(NEWANIMAL):
+            for(int i = 0; i < newAnimalCount; i++)
+            {
+                if(newAnimals[i]->getAge() >= 3)
+                {
+                    addNewAnimal(); 
+                    success = true; 
+                    std::cout << "You have a new " << newAnimalName << "!" << std::endl;
+                    break; 
+                }
+            }
+            break; 
     }
     return success; 
-
 }
 
 void Zoo::animalsAge()
@@ -177,6 +225,13 @@ void Zoo::animalsAge()
     for(int i = 0; i < turtleCount; i++) 
     {
         turtles[i]->addAge(); 
+    }
+    if(hasNewAnimal)
+    {
+        for(int i = 0; i < newAnimalCount; i++)
+        {
+            newAnimals[i]->addAge(); 
+        }
     }
 }
 
@@ -204,9 +259,18 @@ int Zoo::getFoodCost()
     {
         turtleFood = turtles[turtleCount-1]->getFoodCost() * turtleCount; 
         std::cout << "Turtles: " << turtleFood << std::endl;
-        std::cout << std::endl;
         total += turtleFood;
     }
+    if(hasNewAnimal)
+    {
+        if(newAnimalCount >= 1) 
+        {
+            int newAnimalFood = newAnimalFoodCost * newAnimalCount; 
+            std::cout << newAnimalName << ": " << newAnimalFood << std::endl;
+            total += newAnimalFood;
+        }
+    }
+    std::cout << std::endl;
     return total;
 }
 
@@ -219,19 +283,69 @@ int Zoo::getProfit()
         total += penguins[penguinCount-1]->getCost() * penguins[penguinCount-1]->getPayoff() * penguinCount; 
     if(turtleCount >= 1) 
         total += turtles[turtleCount-1]->getCost() * turtles[turtleCount-1]->getPayoff() * turtleCount; 
+    if(hasNewAnimal)
+    {
+        if(newAnimalCount >= 1)
+            total += newAnimalCost * newAnimalProfit * newAnimalCount;
+    }
     return total;
 }
 
 double Zoo::getAnimalValue()
 {
-    int total = 0; 
+    double total = 0; 
     if(tigerCount >= 1) 
         total += tigers[tigerCount-1]->getCost() * tigerCount; 
     if(penguinCount >= 1) 
         total += penguins[penguinCount-1]->getCost() * penguinCount; 
     if(turtleCount >= 1) 
+    {
         total += turtles[turtleCount-1]->getCost() * turtleCount; 
+        std::cout << "getAnimalValue total " << total << std::endl;
+    }    
+    if(hasNewAnimal)
+    {
+        if(newAnimalCount >= 1)
+        {
+            total += newAnimalCost * newAnimalCount;
+            std::cout << "getAnimalValue newAnimalCost " << newAnimalCost << std::endl;
+            std::cout << "getAnimalValue newAnimalCount " << newAnimalCount << std::endl;
+        }
+        std::cout << "getAnimalValue total " << total << std::endl;
+    }
+
     return total;
+}
+
+void Zoo::setNewAnimalData(int babies, double food_cost, double cost, double profit, std::string name)
+{
+    std::cout << "setNewANimalData test" << std::endl;
+    newAnimalBabies = babies; 
+    newAnimalFoodCost = food_cost; 
+    newAnimalCost = cost; 
+    newAnimalProfit = profit; 
+    newAnimalName = name; 
+    std::cout << "setNewANimalData test" << std::endl;
+}
+
+int Zoo::getNewAnimalCount()
+{
+    return newAnimalCount;
+}
+
+double Zoo::getNewAnimalCost()
+{
+    return newAnimalCost;
+}
+
+bool Zoo::includesNewAnimal()
+{
+    return hasNewAnimal;
+}
+
+std::string Zoo::getNewAnimalName()
+{
+    return newAnimalName;
 }
 
 Zoo::~Zoo() 
@@ -253,6 +367,13 @@ Zoo::~Zoo()
         delete turtles[i]; 
     }
     delete [] turtles; 
-
+    if(hasNewAnimal)
+    {
+        for(int i = 0; i < newAnimalCount; i++) 
+        {
+            delete newAnimals[i]; 
+        }
+        delete [] newAnimals;
+    }
 }
 

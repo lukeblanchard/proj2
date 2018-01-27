@@ -8,7 +8,7 @@
 ZooOwner::ZooOwner(int tigers, int penguins, int turtles)
 {
     zoo = new Zoo(tigers, penguins, turtles); 
-    money = 23000 - zoo->getAnimalValue();  
+    money = 100000 - zoo->getAnimalValue();  
 }
 
 bool ZooOwner::buyAnimal(int sp, int age)
@@ -45,6 +45,15 @@ bool ZooOwner::buyAnimal(int sp, int age)
                 money -= 100;
                 success = true; 
             }
+        case(NEWANIMAL):
+            if(money < zoo->getNewAnimalCost())
+                std::cout << "**Insufficient funds to purchase a " << zoo->getNewAnimalName() << "." << std::endl;
+            else
+            {
+                zoo->addNewAnimal(age);
+                money -= zoo->getNewAnimalCost();
+                success = true; 
+            }
     }
     return success;
 }
@@ -62,6 +71,12 @@ void ZooOwner::subtractMoney(double costs)
 double ZooOwner::getMoney()
 {
     return money;
+}
+
+void ZooOwner::setNewAnimalData(int babies, double food_cost, double cost, double profit, std::string name)
+{
+    std::cout << "Zoo Owner setNewAnimalData cost " << cost << std::endl; 
+    zoo->setNewAnimalData(babies, food_cost, cost, profit, name); 
 }
 
 Zoo* ZooOwner::getZoo()

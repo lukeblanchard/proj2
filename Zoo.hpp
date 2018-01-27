@@ -9,8 +9,10 @@
 #include "Tiger.hpp"
 #include "Penguin.hpp"
 #include "Turtle.hpp"
+#include "NewAnimal.hpp"
+#include <string> 
 
-    enum Species {TIGER, PENGUIN, TURTLE};
+    enum Species {TIGER, PENGUIN, TURTLE, NEWANIMAL};
 
 class Zoo 
 {
@@ -24,6 +26,16 @@ private:
     Turtle **turtles; 
     int turtleCount; 
     int turtleCapacity;
+
+    NewAnimal **newAnimals; 
+    int newAnimalCount; 
+    int newAnimalCapacity; 
+    int newAnimalBabies; 
+    double newAnimalFoodCost; 
+    double newAnimalCost; 
+    double newAnimalProfit; 
+    std::string newAnimalName; 
+    bool hasNewAnimal;
 public: 
     Zoo(int, int, int); 
     void addTiger(int age=0); 
@@ -32,12 +44,19 @@ public:
     int getPenguinCount(); 
     void addTurtle(int age=0); 
     int getTurtleCount(); 
+    int getNewAnimalCount(); 
+    void initializeNewAnimals(int);
+    double getNewAnimalCost(); 
+    std::string getNewAnimalName(); 
+    void addNewAnimal(int age=0);
     bool animalBirth(int); 
     void animalsAge(); 
     void animalDeath(int); 
     int getFoodCost(); 
     int getProfit(); 
     double getAnimalValue(); 
+    bool includesNewAnimal(); 
+    void setNewAnimalData(int, double, double, double, std::string);
     ~Zoo(); 
 }; 
 
