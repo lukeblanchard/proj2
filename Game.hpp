@@ -18,9 +18,10 @@ private:
     Menu *menu;
 public: 
     Game();  
+    void makeNewAnimal(); 
     void day(); 
     void playGame(); 
-    void randomEvent(); 
+    void randomEvent(int); 
     void sickness(); 
     void attendance_boom(); 
     bool baby_born(); 

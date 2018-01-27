@@ -17,19 +17,23 @@ Game::Game()
     bool createNewAnimal;
 
     menu = new Menu;
+   
+    std::cout << std::endl;
+    std::cout << "ZOO TYCOON" << std::endl; 
+    std::cout << "----------" << std::endl;
+    std::cout << "**Extra Credit: New Animal**" << std::endl; 
+    std::cout << "**Extra Credit: Status Messages**" << std::endl; 
+    std::cout << "**Extra Credit: Feed Types**" << std::endl; 
+    std::cout << std::endl;
+    std::cout << "Welcome to Zoo Tycoon!\nFirst you need animals to start your zoo!" << std::endl; 
+    std::cout << "Starting funds: $100,000" << std::endl;
+    std::cout << std::endl;
 
     menuIntIO buyAnimals;
     buyAnimals.push_back(std::make_pair("\nTiger cost: $10,000\nHow many tigers do you want to buy?\nPlease enter 1 or 2: ", &tigers)); 
     buyAnimals.push_back(std::make_pair("\nPenguin cost: $1,000\nHow many penguins do you want to buy?\nPlease enter 1 or 2: ", &penguins)); 
     buyAnimals.push_back(std::make_pair("\nTurtle cost: $100\nHow many turtles do you want to buy?\nPlease enter 1 or 2: ", &turtles)); 
-    
-    std::cout << std::endl;
-    std::cout << "ZOO TYCOON" << std::endl; 
-    std::cout << "----------" << std::endl;
-    std::cout << "Welcome to Zoo Tycoon!\nFirst you need animals to start your zoo!" << std::endl; 
-    std::cout << "Starting funds: $100,000" << std::endl;
-    std::cout << std::endl;
-
+ 
     menu->load(buyAnimals, 1, 2); 
 
     tycoon = new ZooOwner(tigers, penguins, turtles);    
@@ -41,7 +45,13 @@ Game::Game()
     menu->load(newSpecies); 
 
     if(createNewAnimal)
-    {
+        makeNewAnimal();  
+    std::cout << "The setup is finished. You may begin playing!" << std::endl;
+    playGame(); 
+}
+
+void Game::makeNewAnimal()
+{
         int babies; 
         int newAnimalsCount;
         double food_cost; 
@@ -63,8 +73,7 @@ Game::Game()
         animalName.push_back(std::make_pair("What do you call this animal? ", &name)); 
 
         menu->load(babyNumber, 1, 5); 
-        menu->load(costPrompts); 
-        std::cout << "Game Constructor, double newAnimalCost: " << cost << std::endl;
+        menu->load(costPrompts, 10); 
         menu->load(profitPrompt, 0.01, 0.2); 
         menu->load(animalName); 
 
@@ -79,8 +88,6 @@ Game::Game()
         tycoon->setNewAnimalData(babies, food_cost, cost, profit, name); 
         zoo->initializeNewAnimals(newAnimalsCount); 
         tycoon->subtractMoney(newAnimalsCount * cost); 
-    }
-    playGame(); 
 }
 
 void Game::playGame()
@@ -90,7 +97,7 @@ void Game::playGame()
     {
         day(); 
         menuBoolIO keepPlaying; 
-        keepPlaying.push_back(std::make_pair("Do you want to keep playing? (y/n) ", &play)); 
+        keepPlaying.push_back(std::make_pair("\nDo you want to keep playing? (y/n) ", &play)); 
 
         menu->load(keepPlaying); 
 
@@ -181,15 +188,41 @@ bool Game::baby_born()
     return success;
 }
 
-void Game::randomEvent()
+void Game::randomEvent(int food)
 {
     std::ifstream file;  
     file.open("statusMessages.txt"); 
     std::string status; 
-    int event = rand() % 4; 
+    int event; 
+    int probability;
     int lineCount = 0; 
     bool newBaby = false; 
 
+    if(food == 1)
+    {
+        probability = rand() % 2 + 1;  
+        if(probability == 1)
+        {
+            event = 0; 
+        }
+        else 
+            event = rand() % 3 + 1; 
+    }
+    if(food == 3)
+    {
+        probability = rand() % 8; 
+        if(probability == 1) 
+        {
+            event = 0; 
+        }
+        else
+            event = rand() % 3 + 1; 
+    }
+    else
+    {
+        event = rand() % 4; 
+    }
+    
     switch(event)
     {
         case 0:
@@ -220,25 +253,30 @@ void Game::randomEvent()
 void Game::day()
 {
     int foodCosts; 
+    int foodChoice; 
     int profit;
     bool buyAnimal;
     int choice;
     double moneyBeginDay = tycoon->getMoney(); 
     int moneyEndDay; 
-    std::cout << std::endl;
-    std::cout << "Daily Summary" << std::endl;
-    std::cout << "-------------" << std::endl;
+    
+    menuIntIO foodQuality; 
+    foodQuality.push_back(std::make_pair("\nPlease choose food quality for the day.\n1.Cheap (half normal price, sickness twice as likely)\n2.Generic (normal price)\n3.Premium (twice normal price, sickness half as likely to occur)\nEnter choice: ", &foodChoice)); 
+   
+    menu->load(foodQuality, 1, 3); 
     //age
     zoo->animalsAge(); 
     //feed and subtract cost
-    foodCosts = zoo->getFoodCost(); 
+    foodCosts = zoo->getFoodCost(foodChoice - 1); 
     tycoon->subtractMoney(foodCosts); 
-    randomEvent();  
+    randomEvent(foodChoice);  
     //calculate and add profit
     profit = zoo->getProfit(); 
     tycoon->addMoney(profit); 
-    
+
     std::cout << std::endl;
+    std::cout << "Daily Summary" << std::endl;
+    std::cout << "-------------" << std::endl;
     std::cout << "Animal Counts" << std::endl;
     std::cout << "Tigers: " << zoo->getTigerCount() << std::endl;
     std::cout << "Penguins: " << zoo->getPenguinCount() << std::endl; 

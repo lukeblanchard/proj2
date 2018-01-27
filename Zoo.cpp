@@ -43,12 +43,9 @@ void Zoo::initializeNewAnimals(int count)
     this->newAnimalCapacity = 10;
     this->hasNewAnimal = true;
     this->newAnimalCount = count;
-    std::cout << "initializeNewAnimals before" << std::endl;
     newAnimals = new NewAnimal*[newAnimalCapacity]; 
-    std::cout << "initializeNewAnimals after" << std::endl;
     for(int i = 0; i < newAnimalCount; i++)
     {
-        std::cout << "initializeNewAnimals i:" << i << std::endl;
         newAnimals[i] = new NewAnimal(1, newAnimalBabies, newAnimalFoodCost, newAnimalCost, newAnimalProfit); 
     }
 }
@@ -179,7 +176,7 @@ bool Zoo::animalBirth(int species)
                 {
                     addPenguin(); 
                     success = true; 
-                    std::cout << "You have a new penguin!" << std::endl;
+                    std::cout << "You have 5 new penguins!" << std::endl;
                     break; 
                 }
             }
@@ -191,7 +188,7 @@ bool Zoo::animalBirth(int species)
                 {
                     addTurtle(); 
                     success = true; 
-                    std::cout << "You have a new turtle!" << std::endl;
+                    std::cout << "You have 10 new turtles!" << std::endl;
                     break; 
                 }
             }
@@ -203,7 +200,7 @@ bool Zoo::animalBirth(int species)
                 {
                     addNewAnimal(); 
                     success = true; 
-                    std::cout << "You have a new " << newAnimalName << "!" << std::endl;
+                    std::cout << "You have " << newAnimalBabies << " new " << newAnimalName << "s!" << std::endl;
                     break; 
                 }
             }
@@ -235,7 +232,7 @@ void Zoo::animalsAge()
     }
 }
 
-int Zoo::getFoodCost()
+int Zoo::getFoodCost(int choice)
 {
     std::cout << std::endl;
     std::cout << "Daily Food Cost" << std::endl;
@@ -243,21 +240,35 @@ int Zoo::getFoodCost()
     int tigerFood; 
     int penguinFood; 
     int turtleFood; 
+    double foodQuality; 
+
+    switch(choice)
+    {
+        case(CHEAP): 
+            foodQuality = 0.5; 
+            break; 
+        case(GENERIC):
+            foodQuality = 1; 
+            break; 
+        case(PREMIUM): 
+            foodQuality = 2; 
+            break;
+    }
     if(tigerCount >= 1) 
     {
-        tigerFood = tigers[tigerCount-1]->getFoodCost() * tigerCount; 
+        tigerFood = tigers[tigerCount-1]->getFoodCost() * foodQuality * tigerCount; 
         std::cout << "Tigers: " << tigerFood << std::endl;
         total += tigerFood;
     }
     if(penguinCount >= 1) 
     {
-        penguinFood = penguins[penguinCount-1]->getFoodCost() * penguinCount; 
+        penguinFood = penguins[penguinCount-1]->getFoodCost() * foodQuality * penguinCount; 
         std::cout << "Penguins: " << penguinFood << std::endl;
         total += penguinFood;
     }
     if(turtleCount >= 1) 
     {
-        turtleFood = turtles[turtleCount-1]->getFoodCost() * turtleCount; 
+        turtleFood = turtles[turtleCount-1]->getFoodCost() * foodQuality * turtleCount; 
         std::cout << "Turtles: " << turtleFood << std::endl;
         total += turtleFood;
     }
@@ -265,7 +276,7 @@ int Zoo::getFoodCost()
     {
         if(newAnimalCount >= 1) 
         {
-            int newAnimalFood = newAnimalFoodCost * newAnimalCount; 
+            int newAnimalFood = newAnimalFoodCost * foodQuality * newAnimalCount; 
             std::cout << newAnimalName << ": " << newAnimalFood << std::endl;
             total += newAnimalFood;
         }
@@ -301,17 +312,13 @@ double Zoo::getAnimalValue()
     if(turtleCount >= 1) 
     {
         total += turtles[turtleCount-1]->getCost() * turtleCount; 
-        std::cout << "getAnimalValue total " << total << std::endl;
     }    
     if(hasNewAnimal)
     {
         if(newAnimalCount >= 1)
         {
             total += newAnimalCost * newAnimalCount;
-            std::cout << "getAnimalValue newAnimalCost " << newAnimalCost << std::endl;
-            std::cout << "getAnimalValue newAnimalCount " << newAnimalCount << std::endl;
         }
-        std::cout << "getAnimalValue total " << total << std::endl;
     }
 
     return total;
@@ -319,13 +326,11 @@ double Zoo::getAnimalValue()
 
 void Zoo::setNewAnimalData(int babies, double food_cost, double cost, double profit, std::string name)
 {
-    std::cout << "setNewANimalData test" << std::endl;
     newAnimalBabies = babies; 
     newAnimalFoodCost = food_cost; 
     newAnimalCost = cost; 
     newAnimalProfit = profit; 
     newAnimalName = name; 
-    std::cout << "setNewANimalData test" << std::endl;
 }
 
 int Zoo::getNewAnimalCount()

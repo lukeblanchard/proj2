@@ -75,7 +75,6 @@ double ZooOwner::getMoney()
 
 void ZooOwner::setNewAnimalData(int babies, double food_cost, double cost, double profit, std::string name)
 {
-    std::cout << "Zoo Owner setNewAnimalData cost " << cost << std::endl; 
     zoo->setNewAnimalData(babies, food_cost, cost, profit, name); 
 }
 

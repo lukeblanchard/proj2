@@ -13,6 +13,7 @@
 #include <string> 
 
     enum Species {TIGER, PENGUIN, TURTLE, NEWANIMAL};
+    enum Feed {CHEAP, GENERIC, PREMIUM}; 
 
 class Zoo 
 {
@@ -52,7 +53,7 @@ public:
     bool animalBirth(int); 
     void animalsAge(); 
     void animalDeath(int); 
-    int getFoodCost(); 
+    int getFoodCost(int); 
     int getProfit(); 
     double getAnimalValue(); 
     bool includesNewAnimal(); 
