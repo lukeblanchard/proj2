@@ -208,7 +208,7 @@ void Game::randomEvent(int food)
         else 
             event = rand() % 3 + 1; 
     }
-    if(food == 3)
+    else if(food == 3)
     {
         probability = rand() % 8; 
         if(probability == 1) 
@@ -218,7 +218,7 @@ void Game::randomEvent(int food)
         else
             event = rand() % 3 + 1; 
     }
-    else
+    else 
     {
         event = rand() % 4; 
     }
@@ -266,7 +266,10 @@ void Game::day()
     menu->load(foodQuality, 1, 3); 
     //age
     zoo->animalsAge(); 
-    //feed and subtract cost
+
+    std::cout << std::endl;
+    std::cout << "Daily Summary" << std::endl;
+    std::cout << "-------------" << std::endl;
     foodCosts = zoo->getFoodCost(foodChoice - 1); 
     tycoon->subtractMoney(foodCosts); 
     randomEvent(foodChoice);  
@@ -275,8 +278,6 @@ void Game::day()
     tycoon->addMoney(profit); 
 
     std::cout << std::endl;
-    std::cout << "Daily Summary" << std::endl;
-    std::cout << "-------------" << std::endl;
     std::cout << "Animal Counts" << std::endl;
     std::cout << "Tigers: " << zoo->getTigerCount() << std::endl;
     std::cout << "Penguins: " << zoo->getPenguinCount() << std::endl; 

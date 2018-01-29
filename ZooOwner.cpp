@@ -45,6 +45,7 @@ bool ZooOwner::buyAnimal(int sp, int age)
                 money -= 100;
                 success = true; 
             }
+            break;
         case(NEWANIMAL):
             if(money < zoo->getNewAnimalCost())
                 std::cout << "**Insufficient funds to purchase a " << zoo->getNewAnimalName() << "." << std::endl;

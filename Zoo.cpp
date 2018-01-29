@@ -107,7 +107,7 @@ void Zoo::addNewAnimal(int age)
         newAnimals = expandedNewAnimals;
     }
     newAnimals[newAnimalCount] = new NewAnimal(age, newAnimalBabies, newAnimalFoodCost, newAnimalCost, newAnimalProfit);     
-    turtleCount += 1; 
+    newAnimalCount += 1; 
 }
 
 void Zoo::animalDeath(int species)
